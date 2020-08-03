@@ -1,0 +1,11 @@
+node_modules
+
+.vscode
+
+desktop.ini
+
+dist
+
+_v_recycle_bin
+_vnote.json
+*.md.vswp

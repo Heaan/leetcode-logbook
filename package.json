@@ -1,0 +1,27 @@
+{
+  "name": "y",
+  "version": "1.0.0",
+  "description": "LeetCode 题海日志",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Heaan/leetcode-logbook.git"
+  },
+  "author": "Heaan Chan",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Heaan/leetcode-logbook/issues"
+  },
+  "homepage": "https://github.com/Heaan/leetcode-logbook#readme",
+  "devDependencies": {
+    "@types/node": "^14.0.26",
+    "module-alias": "^2.2.2",
+    "ts-node": "^8.10.2"
+  },
+  "_moduleAliases": {
+    "@utils": "src/utils"
+  }
+}

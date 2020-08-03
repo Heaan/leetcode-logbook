@@ -1,0 +1,8 @@
+node_modules
+
+.vscode
+
+dist
+
+_v_recycle_bin
+_vnote.json
