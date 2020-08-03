@@ -1,0 +1,31 @@
+{
+  // 需要本地安装 ts-node 包
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Launch via NPM",
+      "request": "launch",
+      "runtimeArgs": ["run-script", "debug"],
+      "runtimeExecutable": "npm",
+      "skipFiles": ["<node_internals>/**"],
+      "type": "pwa-node"
+    },
+    {
+      "name": "调试 TypeScript",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceRoot}/node_modules/ts-node/dist/bin.js",
+      "args": ["${relativeFile}"],
+      "cwd": "${workspaceRoot}",
+      "env": { "TS_NODE_PORJECT": "<tsconfig.json>" },
+      "protocol": "inspector"
+    },
+    {
+      "name": "Launch Program",
+      "type": "node",
+      "request": "launch",
+      "runtimeArgs": ["-r", "ts-node/register"],
+      "args": ["${workspaceFolder}/index.ts"]
+    }
+  ]
+}

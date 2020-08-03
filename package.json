@@ -1,6 +1,6 @@
 {
-  "name": "y",
-  "version": "1.0.0",
+  "name": "leetcode-logbook",
+  "version": "0.0.1",
   "description": "LeetCode 题海日志",
   "main": "index.js",
   "scripts": {
@@ -11,7 +11,7 @@
     "url": "git+https://github.com/Heaan/leetcode-logbook.git"
   },
   "author": "Heaan Chan",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/Heaan/leetcode-logbook/issues"
   },
@@ -23,5 +23,12 @@
   },
   "_moduleAliases": {
     "@utils": "src/utils"
-  }
+  },
+  "keywords": [
+    "leetcode",
+    "typescript",
+    "algorithms",
+    "data structures",
+    "vs code"
+  ]
 }
