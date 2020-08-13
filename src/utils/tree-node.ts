@@ -1,97 +1,97 @@
-type CallbackType = (value: number) => void;
+export type CallbackType<T = number> = (...args: T[]) => any;
 
-export class TreeNode {
+export class TreeNode<T = number> {
   constructor(
-    public val: number = 0,
+    public val: number | T = 0,
     public left: TreeNode | null = null,
     public right: TreeNode | null = null,
   ) {}
 }
 
 /**
- * 先序遍历
+ * 先序遍历(指针·栈·迭代)
  * @param root 树的根节点
  * @param callback 回调函数
  */
 export const preOrderTraverse = (root: TreeNode | null, callback: CallbackType): void => {
-  if (root != null) {
-    callback(root.val);
-    preOrderTraverse(root.left, callback);
-    preOrderTraverse(root.right, callback);
+  if (root) {
+    const stack: TreeNode[] = [];
+    let prt: TreeNode | null = root;
+
+    while (prt || stack.length) {
+      if (!prt) prt = stack.pop()!;
+      callback(prt.val);
+      if (prt.right) stack.push(prt.right);
+      prt = prt.left;
+    }
   }
 };
 
 /**
- * 中序遍历
+ * 中序遍历(指针·栈·迭代)
  * @param root 树的根节点
  * @param callback 回调函数
  */
 export const inOrderTraverse = (root: TreeNode | null, callback: CallbackType): void => {
-  if (root != null) {
-    inOrderTraverse(root.left, callback);
-    callback(root.val);
-    inOrderTraverse(root.right, callback);
-  }
-};
+  if (root) {
+    const stack: TreeNode[] = [];
+    let prt: TreeNode | null = root;
 
-/**
- * 后序遍历
- * @param root 树的根节点
- * @param callback 回调函数
- */
-export const postOrderTraverse = (root: TreeNode | null, callback: CallbackType): void => {
-  if (root != null) {
-    postOrderTraverse(root.left, callback);
-    postOrderTraverse(root.right, callback);
-    callback(root.val);
-  }
-};
-
-/**
- * 层序遍历
- * @param root 树的根节点
- * @param callback 回调函数
- */
-export const levelOrderTraverse = (root: TreeNode | null, callback: CallbackType): void => {
-  if (root != null) {
-    const queue: TreeNode[] = [];
-    queue.push(root);
-
-    while (queue.length) {
-      const node = queue.shift();
-      if (node) {
-        callback(node.val);
-        if (node.left) queue.push(node.left);
-        if (node.right) queue.push(node.right);
+    while (prt || stack.length) {
+      if (!prt) {
+        prt = stack.pop()!;
+        callback(prt.val);
+        prt = prt.right;
+      }
+      if (prt) {
+        stack.push(prt);
+        prt = prt.left;
       }
     }
   }
 };
 
 /**
- * 把目标数组转化为树
- * 迭代实现
- * @param arr 目标数组
+ * 后序遍历(双指针·栈·迭代)
+ * @param root 树的根节点
+ * @param callback 回调函数
  */
-export const binaryTreeBuilderIterator = (arr: (number | null)[]): TreeNode | null => {
-  const queue: (TreeNode | null)[] = [];
-  const val = arr.shift();
-  const root = val != null ? new TreeNode(val) : null;
+export const postOrderTraverse = (root: TreeNode | null, callback: CallbackType): void => {
+  if (root) {
+    const stack = [root];
+    let prt: TreeNode = root;
 
-  queue.push(root);
-
-  while (queue.length && arr.length) {
-    const node = queue.shift();
-    if (node != null) {
-      const lef = arr.shift();
-      const rig = arr.shift();
-      node.left = lef != null ? new TreeNode(lef) : null;
-      node.right = rig != null ? new TreeNode(rig) : null;
-      queue.push(node.left, node.right);
+    while (stack.length) {
+      const peek = stack.length - 1;
+      const top = stack[peek];
+      if (top.left && top.left !== prt && top.right !== prt) {
+        stack.push(top.left);
+      } else if (top.right && top.right !== prt) {
+        stack.push(top.right);
+      } else {
+        callback(stack.pop()!.val);
+        prt = top;
+      }
     }
   }
+};
 
-  return root;
+/**
+ * 层序遍历(队列·迭代)
+ * @param root 树的根节点
+ * @param callback 回调函数
+ */
+export const levelOrderTraverse = (root: TreeNode | null, callback: CallbackType): void => {
+  if (root) {
+    const queue = [root];
+
+    while (queue.length) {
+      const node = queue.shift()!;
+      callback(node.val);
+      if (node.left) queue.push(node.left);
+      if (node.right) queue.push(node.right);
+    }
+  }
 };
 
 const grow = (arr: (number | null)[], children: (TreeNode | null)[]): void => {
@@ -110,13 +110,12 @@ const grow = (arr: (number | null)[], children: (TreeNode | null)[]): void => {
 
   if (arr.length) grow(arr, bro);
 };
-
 /**
  * 把目标数组转化为树
  * 递归实现
  * @param arr 目标函数
  */
-const binaryTreeBuilderRecursion = (arr: (number | null)[]): TreeNode | null => {
+export const binaryTreeBuilderRecursion = (arr: (number | null)[]): TreeNode | null => {
   const val = arr.shift();
   const root = val != null ? new TreeNode(val) : null;
   grow(arr, [root]);
@@ -124,14 +123,45 @@ const binaryTreeBuilderRecursion = (arr: (number | null)[]): TreeNode | null => 
 };
 
 /**
- * 从参数构建树
- * @param args 参数数组
+ * 把目标数组转化为树(队列·迭代)
+ * @param arr 目标数组
  */
-export const createBinaryTree = (...args: (number | null)[]): TreeNode | null => {
-  const root = binaryTreeBuilderRecursion(args);
+const binaryTreeBuilder = (arr: (number | null)[]): TreeNode | null => {
+  if (arr[0] == null) return null;
+
+  const root = new TreeNode(arr.shift()!);
+  const queue = [root];
+
+  while (queue.length && arr.length) {
+    const node = queue.shift()!;
+    const lef = arr.shift();
+    const rig = arr.shift();
+    if (lef) {
+      node.left = new TreeNode(lef);
+      queue.push(node.left);
+    }
+    if (rig) {
+      node.right = new TreeNode(rig);
+      queue.push(node.right);
+    }
+  }
+
   return root;
 };
 
+/**
+ * 根据参数输入的值构建二叉树
+ * @param args 参数数组
+ */
+export const createBinaryTree = (...args: (number | null)[]): TreeNode | null => {
+  const root = binaryTreeBuilder(args);
+  return root;
+};
+
+/**
+ * 把二叉树转化为数组
+ * @param root 目标树的根节点
+ */
 export const binaryTreeToArray = (root: TreeNode | null): (number | null)[] => {
   if (!root) return [null];
 
@@ -140,11 +170,15 @@ export const binaryTreeToArray = (root: TreeNode | null): (number | null)[] => {
 
   while (queue.length) {
     let size = queue.length;
-    while (size-- > 0) {
+    while (size--) {
       const node = queue.shift();
       array.push(node?.val ?? null);
       if (node?.left || node?.right) {
-        queue.push(node.left, node.right);
+        queue.push(node.left);
+        // 过滤数组末尾的 null
+        if (node.right || node.left?.left || node.left?.right) {
+          queue.push(node.right);
+        }
       }
     }
   }
@@ -152,6 +186,44 @@ export const binaryTreeToArray = (root: TreeNode | null): (number | null)[] => {
   return array;
 };
 
-// const tree = createBinaryTree(1, 2, null, 3, null, 4, null, 5);
-// inOrderTraverse(tree, console.info);
-// console.info(binaryTreeToArray(tree));
+export const deepCopy = <T>(target: T): any => {
+  if (target instanceof Object) {
+    if (target instanceof String) {
+      const str = target.valueOf();
+      return new String(str);
+    }
+    if (target instanceof Number) {
+      const num = target.valueOf();
+      return new Number(num);
+    }
+    if (target instanceof Boolean) {
+      const bool = target.valueOf();
+      return new Boolean(bool);
+    }
+    if (target instanceof Array) {
+      const array = target.map((item) => deepCopy(item));
+      return array;
+    }
+    let obj = {};
+    // for (const key in target) {
+    //   obj[key] = deepCopy(target[key]);
+    // }
+    return obj;
+  }
+
+  return target;
+};
+
+/**
+ * 根据给定的根节点，返回目标树深拷贝的副本
+ * @param root 目标树的根节点
+ */
+export const createBinaryTreeCopy = (root: TreeNode | null): TreeNode | null => {
+  if (!root) return null;
+
+  const copy = new TreeNode(deepCopy(root.val));
+  copy.left = createBinaryTreeCopy(root.left);
+  copy.right = createBinaryTreeCopy(root.right);
+
+  return copy;
+};
